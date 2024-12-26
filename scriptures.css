@@ -1,0 +1,28 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background-color: #f5f5f5;
+}
+
+.scripture-container {
+    max-width: 800px;
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+p {
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 1rem;
+}
