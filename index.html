@@ -1,67 +1,17 @@
-/X-Me/index.html
+/index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scripture Navigator</title>
-    <style>
-        .nav-menu {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            background: #f0f0f0;
-        }
-        .nav-link {
-            text-decoration: none;
-            color: #333;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-        }
-        .nav-link:hover {
-            background: #ddd;
-        }
-        #router-view {
-            padding: 2rem;
-        }
-    </style>
+    <link rel="stylesheet" href="global.css">
 </head>
 <body>
     <nav class="nav-menu">
-        <a href="#scripture1" class="nav-link">Scripture 1</a>
-        <a href="#scripture2" class="nav-link">Scripture 2</a>
-        <a href="#scripture3" class="nav-link">Scripture 3</a>
+        <a href="scripture1.html" class="nav-button">Scripture 1</a>
+        <a href="scripture2.html" class="nav-button">Scripture 2</a>
+        <a href="scripture3.html" class="nav-button">Scripture 3</a>
     </nav>
-
-    <div id="router-view">
-        <!-- Content will be loaded here -->
-    </div>
-
-    <script>
-        // Simple router function
-        function handleRoute() {
-            const hash = window.location.hash || '#scripture1';
-            const routerView = document.getElementById('router-view');
-            
-            switch(hash) {
-                case '#scripture1':
-                    routerView.innerHTML = '<h1>Scripture 1</h1><p>Content for scripture 1</p>';
-                    break;
-                case '#scripture2':
-                    routerView.innerHTML = '<h1>Scripture 2</h1><p>Content for scripture 2</p>';
-                    break;
-                case '#scripture3':
-                    routerView.innerHTML = '<h1>Scripture 3</h1><p>Content for scripture 3</p>';
-                    break;
-                default:
-                    routerView.innerHTML = '<h1>404</h1><p>Page not found</p>';
-            }
-        }
-
-        // Listen for hash changes
-        window.addEventListener('hashchange', handleRoute);
-        // Initial route handling
-        handleRoute();
-    </script>
 </body>
 </html>
