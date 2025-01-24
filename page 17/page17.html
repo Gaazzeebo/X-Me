@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Proverbs 18:10" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Proverbs 18:10| Interactive Journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff6600;
+            --primary-dark: #cc5200;
+            --primary-light: #ff944d;
+            --accent-color: #4a90e2;
+            --accent-dark: #357abd;
+            --text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        @supports (height: 100dvh) {
+            body, .content-wrapper {
+                height: 100dvh;
+            }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Cormorant Garamond", serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--primary-dark);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .interactive-background {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('image.jpeg') no-repeat center center;
+            background-size: cover;
+            filter: blur(0px);
+            transition: transform 0.3s ease-out;
+        }
+
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content-wrapper {
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: calc(20px + var(--safe-area-inset-top)) 20px calc(20px + var(--safe-area-inset-bottom));
+        }
+
+        .verse-container {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .interactive-title {
+            position: relative;
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards;
+        }
+
+        .main-title {
+            font-family: "Cinzel", serif;
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            background: linear-gradient(135deg, #fff 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--text-shadow);
+            margin-bottom: 0.5rem;
+            user-select: none;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .verse-reference {
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            color: var(--primary-light);
+            opacity: 1;
+            animation: fadeIn 1s forwards 0.5s;
+            text-shadow: var(--text-shadow);
+        }
+
+        .scripture-reveal {
+            position: relative;
+            width: 100%;
+            max-width: 90%;
+            margin: 0 auto;
+            perspective: 1000px;
+            opacity: 1;
+            animation: fadeIn 1s forwards 1s;
+        }
+
+        .scripture-card {
+            position: relative;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(74, 144, 226, 0.1);
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+            cursor: grab;
+            overflow: hidden;
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .scripture-card:active {
+            cursor: grabbing;
+        }
+
+        .verse-text {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            line-height: 1.6;
+            text-align: center;
+            text-shadow: var(--text-shadow);
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .interactive-word {
+            display: inline-block;
+            color: var(--accent-color);
+            position: relative;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0 4px;
+        }
+
+        .interactive-word::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+
+        .interactive-word:active {
+            transform: scale(0.95);
+        }
+
+        .insight-popup {
+            position: fixed;
+            max-width: 280px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 12px;
+            transform: scale(0);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            pointer-events: auto;
+        }
+
+        .insight-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: white;
+            text-align: left;
+            padding-right: 20px;
+        }
+
+        .close-insight {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .close-insight:hover {
+            color: white;
+        }
+
+        .interaction-hint {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: calc(1rem + var(--safe-area-inset-bottom)) 1rem 1rem;
+            text-align: center;
+            z-index: 10;
+            transform: translateY(100%);
+            animation: slideUp 0.5s forwards 1.5s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gaazzeebo-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Cinzel", serif;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.8rem 2rem;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            position: relative;
+            border-radius: 30px;
+            background: rgba(255, 102, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .gaazzeebo-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .gaazzeebo-link span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .verse-container {
+                padding: 1rem;
+            }
+
+            .scripture-card {
+                padding: 1.5rem;
+            }
+
+            .verse-text {
+                font-size: clamp(1.3rem, 4vw, 1.8rem);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        @media (hover: hover) {
+            .gaazzeebo-link:hover::before {
+                opacity: 1;
+            }
+
+            .gaazzeebo-link:hover {
+                color: white;
+                box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+            }
+
+            .interactive-word:hover::after {
+                transform: scaleX(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <div class="background-container">
+        <div class="interactive-background"></div>
+        <div class="particle-container"></div>
+    </div>
+
+    <div class="floating-particles"></div>
+
+    <div class="content-wrapper">
+        <div class="verse-container">
+            <div class="interactive-title">
+                <h1 class="main-title">Proverbs 18:10</h1>
+                <div class="verse-reference">The Book of Proverbs</div>
+            </div>
+
+            <div class="scripture-reveal">
+                <div class="scripture-card">
+                    <div class="verse-text">
+                        “The name of the Lord is a
+                        <span class="interactive-word" data-insight="God as ultimate protector and source of security">fortified tower</span>;
+                        the 
+                        <span class="interactive-word" data-insight="Made right with God through Christ; living aligned with God's character">righteous</span>
+                        run to it and are safe."
+                    </div>
+                </div>
+            </div>
+
+            <div class="interaction-hint">Tap words to explore deeper meaning</div>
+        </div>
+    </div>
+
+    <div class="insight-popup">
+        <div class="insight-content"></div>
+        <button class="close-insight">×</button>
+    </div>
+
+    <footer class="footer">
+        <a href="https://gaazzeebo.net" target="_blank" rel="noopener noreferrer" class="gaazzeebo-link">
+            <span>Powered by Gaazzeebo</span>
+        </a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize HammerJS for touch gestures
+            const scriptureCard = document.querySelector('.scripture-card');
+            const hammer = new Hammer(scriptureCard);
+            let initialScale = 1;
+            let currentRotateX = 0;
+            let currentRotateY = 0;
+
+            // Hide loading screen after content loads
+            window.addEventListener('load', () => {
+                const loadingScreen = document.querySelector('.loading-screen');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.style.display = 'none', 500);
+            });
+
+            // Interactive words functionality
+            const interactiveWords = document.querySelectorAll('.interactive-word');
+            const insightPopup = document.querySelector('.insight-popup');
+            const insightContent = document.querySelector('.insight-content');
+            const closeInsight = document.querySelector('.close-insight');
+            let activePopup = false;
+
+            function hideInsightPopup() {
+                if (activePopup) {
+                    insightPopup.style.transform = 'scale(0)';
+                    insightPopup.style.opacity = '0';
+                    activePopup = false;
+                }
+            }
+
+            interactiveWords.forEach(word => {
+                ['click', 'touchend'].forEach(eventType => {
+                    word.addEventListener(eventType, (e) => {
+                        e.preventDefault();
+                        const text = word.getAttribute('data-insight');
+                        const rect = word.getBoundingClientRect();
+                        
+                        // Position popup near the word
+                        const popupX = Math.min(
+                            rect.left,
+                            window.innerWidth - 290
+                        );
+                        const popupY = rect.bottom + 10;
+
+                        insightPopup.style.left = `${popupX}px`;
+                        insightPopup.style.top = `${popupY}px`;
+                        insightContent.textContent = text;
+
+                        // Show popup
+                        setTimeout(() => {
+                            insightPopup.style.transform = 'scale(1)';
+                            insightPopup.style.opacity = '1';
+                        }, 50);
+                        
+                        activePopup = true;
+                        
+                        createRippleEffect(e.type === 'click' ? e : e.changedTouches[0]);
+                        createParticles(e.type === 'click' ? e : e.changedTouches[0]);
+                    });
+                });
+            });
+
+            // Close popup when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.insight-popup') && 
+                    !e.target.closest('.interactive-word')) {
+                    hideInsightPopup();
+                }
+            });
+
+            closeInsight.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideInsightPopup();
+            });
+
+            // Close popup when scrolling
+            document.addEventListener('scroll', hideInsightPopup);
+
+            // Touch gesture handling
+            hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+            hammer.get('pinch').set({ enable: true });
+
+            hammer.on('pan', (ev) => {
+                const { deltaX, deltaY } = ev;
+                currentRotateY = deltaX * 0.5;
+                currentRotateX = -deltaY * 0.5;
+                updateCardTransform();
+            });
+
+            hammer.on('panend', () => {
+                gsap.to(scriptureCard, {
+                    duration: 0.5,
+                    rotateX: 0,
+                    rotateY: 0,
+                    scale: 1,
+                    ease: 'power2.out'
+                });
+                currentRotateX = 0;
+                currentRotateY = 0;
+            });
+
+            hammer.on('pinch', (ev) => {
+                const scale = Math.min(Math.max(ev.scale * initialScale, 0.5), 1.5);
+                scriptureCard.style.transform = `scale(${scale}) rotateX(${currentRotateX}deg) rotateY(${currentRotateY}deg)`;
+            });
+
+            hammer.on('pinchend', () => {
+                initialScale = 1;
+                gsap.to(scriptureCard, {
+                    duration: 0.5,
+                    scale: 1,
+                    ease: 'power2.out'
+                });
+            });
+
+            function updateCardTransform() {
+                scriptureCard.style.transform = `rotateX(${currentRotateX}deg) rotateY(${currentRotateY}deg) scale(${initialScale})`;
+            }
+
+            // Particle effects
+            function createParticles(event) {
+                const colors = [
+                    getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--primary-light'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--accent-dark')
+                ];
+
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.width = particle.style.height = '8px';
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.position = 'absolute';
+                    particle.style.borderRadius = '50%';
+                    particle.style.pointerEvents = 'none';
+
+                    const rect = event.target.getBoundingClientRect();
+                    const startX = rect.left + rect.width / 2;
+                    const startY = rect.top + rect.height / 2;
+
+                    particle.style.left = startX + 'px';
+                    particle.style.top = startY + 'px';
+
+                    document.querySelector('.particle-container').appendChild(particle);
+
+                    const angle = (i / 8) * Math.PI * 2;
+                    const velocity = 2;
+                    const vx = Math.cos(angle) * velocity;
+                    const vy = Math.sin(angle) * velocity;
+
+                    gsap.to(particle, {
+                        duration: 1,
+                        x: vx * 50,
+                        y: vy * 50,
+                        opacity: 0,
+                        ease: 'power2.out',
+                        onComplete: () => particle.remove()
+                    });
+                }
+            }
+
+            // Ripple effect
+            function createRippleEffect(event) {
+                const ripple = document.createElement('div');
+                const rect = event.target.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (event.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (event.clientY - rect.top - size/2) + 'px';
+                ripple.className = 'ripple';
+                
+                event.target.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            }
+
+            // Show interaction hint
+            setTimeout(() => {
+                const hint = document.querySelector('.interaction-hint');
+                hint.style.opacity = '1';
+                setTimeout(() => hint.style.opacity = '0', 3000);
+            }, 2000);
+
+            // Background parallax effect
+            const background = document.querySelector('.interactive-background');
+            
+            window.addEventListener('deviceorientation', (e) => {
+                if (e.beta && e.gamma) {
+                    const moveX = (e.gamma / 90) * 15;
+                    const moveY = (e.beta / 180) * 15;
+
+                    gsap.to(background, {
+                        duration: 0.5,
+                        x: moveX,
+                        y: moveY,
+                        ease: 'power1.out'
+                    });
+                }
+            });
+
+            // Handle device wake
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    gsap.to(background, {
+                        duration: 0.5,
+                        scale: 1.1,
+                        opacity: 1,
+                        ease: 'power2.out'
+                    });
+                }
+            });
+
+            // Create floating elements
+            function createFloatingElements() {
+                const container = document.querySelector('.floating-particles');
+                const colors = [
+                    getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--accent-color')
+                ];
+
+                setInterval(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'floating-particle';
+                    particle.style.width = particle.style.height = Math.random() * 4 + 2 + 'px';
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.position = 'absolute';
+                    particle.style.borderRadius = '50%';
+                    particle.style.filter = 'blur(1px)';
+                    particle.style.opacity = '0';
+
+                    const startX = Math.random() * window.innerWidth;
+                    particle.style.left = startX + 'px';
+                    particle.style.top = window.innerHeight + 'px';
+
+                    container.appendChild(particle);
+
+                    gsap.to(particle, {
+                        duration: Math.random() * 3 + 2,
+                        y: -window.innerHeight,
+                        x: startX + (Math.random() - 0.5) * 100,
+                        opacity: 0.5,
+                        ease: 'power1.in',
+                        onComplete: () => particle.remove()
+                    });
+                }, 500);
+            }
+
+            createFloatingElements();
+        });
+    </script>
+</body>
+</html>
